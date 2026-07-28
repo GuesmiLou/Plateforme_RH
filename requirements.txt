@@ -1,0 +1,20 @@
+# requirements.txt
+# Installation : pip install -r requirements.txt
+#
+# Convention : un paquet par ligne, version fixée avec "=="
+# pour garantir que le projet fonctionne à l'identique sur
+# toutes les machines (cohérent avec la version installée
+# dans l'environnement virtuel du projet).
+
+# --- Framework principal ---
+Django==6.0.7
+
+# --- Connexion à PostgreSQL ---
+psycopg2-binary==2.9.9
+
+# --- Gestion des variables d'environnement (.env) ---
+python-decouple==3.8
+
+# --- À ajouter au fur et à mesure des besoins, par exemple : ---
+# djangorestframework==3.15.2   # si une API REST est ajoutée
+# Pillow==10.4.0                # si upload/traitement d'images
