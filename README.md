@@ -2,7 +2,7 @@
 
 ## À propos
 
-Plateforme RH est une application web développée avec Django et PostgreSQL permettant la gestion des offres d'emploi et des candidatures. Elle offre l'ajout d'offres, le dépôt de CV, la recherche de candidats par mots-clés et le suivi des statuts de recrutement (en attente, accepté, refusé).
+Plateforme RH est une application web développée avec Django et PostgreSQL permettant la gestion des offres d'emploi et des candidatures. Elle offre l'ajout d'offres, le dépôt de CV, la recherche de candidats par mots-clés et le suivi des statuts de recrutement (en attente, accepté, refusé)
 
 ## Table des matières
 
