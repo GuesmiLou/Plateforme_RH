@@ -1,0 +1,6 @@
+<h1>Statut de la candidature de {{ candidature.candidat.prenom }} {{ candidature.candidat.nom }}</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enregistrer</button>
+</form>

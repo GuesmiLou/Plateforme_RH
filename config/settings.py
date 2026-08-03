@@ -123,4 +123,4 @@ USE_TZ = True
 STATIC_URL = 'static/'
 AUTH_USER_MODEL = "users.Utilisateur"
 LOGIN_URL = "connexion"
-LOGIN_REDIRECT_URL = "/admin/"
+LOGIN_REDIRECT_URL = "liste_offres"

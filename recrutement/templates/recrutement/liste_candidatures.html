@@ -1,0 +1,13 @@
+<h1>Candidatures pour "{{ offre.titre }}"</h1>
+<a href="{% url 'ajouter_candidature' offre.id %}">Ajouter un candidat</a>
+<ul>
+{% for c in candidatures %}
+    <li>
+        {{ c.candidat.prenom }} {{ c.candidat.nom }} — {{ c.statut }}
+        <a href="{% url 'modifier_candidature' c.id %}">Changer le statut</a>
+    </li>
+{% empty %}
+    <li>Aucune candidature pour le moment.</li>
+{% endfor %}
+</ul>
+<a href="{% url 'detail_offre' offre.id %}">Retour à l'offre</a>

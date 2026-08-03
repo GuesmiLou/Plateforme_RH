@@ -1,0 +1,9 @@
+<h1>Offres</h1>
+<a href="{% url 'creer_offre' %}">Nouvelle offre</a>
+<ul>
+{% for offre in offres %}
+    <li><a href="{% url 'detail_offre' offre.id %}">{{ offre.titre }}</a> — {{ offre.lieu }}</li>
+{% empty %}
+    <li>Aucune offre pour le moment.</li>
+{% endfor %}
+</ul>
