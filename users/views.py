@@ -8,9 +8,11 @@ def inscription(request):
     if request.method == "POST":
         form = UtilisateurSignUpForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect("/admin/")
+            user = form.save(commit=False)
+            user.is_staff = False
+            user.is_superuser = False  
+            user.save()
+            return redirect("connexion")
     else:
         form = UtilisateurSignUpForm()
 
@@ -20,3 +22,16 @@ def inscription(request):
 def deconnexion(request):
     logout(request)
     return redirect("connexion")
+
+def accueil(request):
+    return render(request, "users/accueil.html")
+
+
+class CustomLoginView(LoginView):
+    template_name = "users/connexion.html"
+
+    def get_success_url(self):
+        user = self.request.user
+        if user.is_staff or user.is_superuser:
+            return "/admin/"
+        return "/recrutement/offres/"

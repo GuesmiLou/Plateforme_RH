@@ -16,15 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic import RedirectView
-from django.contrib.auth.views import LoginView
-from users import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", RedirectView.as_view(url="/admin/"), name="accueil"),
-    path("inscription/", views.inscription, name="inscription"),
-    path("connexion/", LoginView.as_view(template_name="users/connexion.html"), name="connexion"),
-    path("deconnexion/", views.deconnexion, name="deconnexion"),
+    path("", include("users.urls")),
     path("recrutement/", include("recrutement.urls")),
 ]

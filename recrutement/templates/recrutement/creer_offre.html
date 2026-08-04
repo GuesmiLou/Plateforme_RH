@@ -1,6 +1,24 @@
-<h1>Nouvelle offre</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Publier</button>
-</form>
+{% extends "recrutement/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3">
+                <h4 class="fw-bold mb-0 text-dark">Publier une nouvelle offre</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{% url 'liste_offres' %}" class="btn btn-light border">Annuler</a>
+                        <button type="submit" class="btn btn-primary">Enregistrer l'offre</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
