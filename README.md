@@ -135,4 +135,4 @@ La dénomination des versions suit la [gestion sémantique de version](https://s
 
 ## Licence
 
-Projet académique réalisé dans le cadre d'un stage / d'un module universitaire (ISIMG).
+Projet académique réalisé dans le cadre d'un stage / d'un module universitaire (ISIMG)
