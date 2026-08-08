@@ -4,7 +4,6 @@ from users.models import Utilisateur
 
 
 class OffreEmploi(models.Model):
-    # --- Nouvelles classes de choix ---
     class TypeContrat(models.TextChoices):
         CDI = "CDI", "CDI"
         CDD = "CDD", "CDD"
@@ -17,7 +16,6 @@ class OffreEmploi(models.Model):
         HYBRIDE = "HYBRIDE", "Hybride"
         TELECOMMUTE = "TELECOMMUTE", "Télétravail"
 
-    
     utilisateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
     titre = models.CharField(max_length=255)
     description = models.TextField()
@@ -31,7 +29,6 @@ class OffreEmploi(models.Model):
         default="ouverte",
     )
 
-    
     type_contrat = models.CharField(
         max_length=20, choices=TypeContrat.choices, default=TypeContrat.CDI
     )
@@ -52,7 +49,6 @@ class OffreEmploi(models.Model):
 
 
 class Candidat(models.Model):
-    
     class NiveauScolaire(models.TextChoices):
         BAC = "bac", "Baccalauréat"
         LICENCE = "licence", "Licence"
@@ -67,6 +63,13 @@ class Candidat(models.Model):
         AUTRE = "AUTRE", "Autre"
 
     
+    utilisateur = models.ForeignKey(
+        Utilisateur,
+        on_delete=models.CASCADE,
+        related_name="candidats",
+        null=True,
+        blank=True,
+    )
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
     email = models.EmailField(blank=True)
@@ -76,7 +79,6 @@ class Candidat(models.Model):
     mobilite = models.BooleanField(default=False, help_text="Le candidat est-il mobile géographiquement ?")
     cv = models.FileField(upload_to="cvs/", blank=True, null=True)
 
-    
     ville = models.CharField(max_length=100, blank=True)
     linkedin_url = models.URLField(blank=True)
     annees_experience = models.PositiveIntegerField(default=0)
@@ -94,7 +96,6 @@ class Candidat(models.Model):
 
 
 class Candidature(models.Model):
-    
     candidat = models.ForeignKey(Candidat, on_delete=models.CASCADE)
     offre = models.ForeignKey(OffreEmploi, on_delete=models.CASCADE)
     date_candidature = models.DateTimeField(auto_now_add=True)
@@ -109,6 +110,8 @@ class Candidature(models.Model):
     )
 
     
+    numero_dossier = models.CharField(max_length=100, unique=True, editable=False, blank=True)
+
     note_evaluation = models.PositiveSmallIntegerField(
         null=True,
         blank=True,
@@ -116,7 +119,19 @@ class Candidature(models.Model):
         help_text="Note globale de 1 à 5",
     )
     commentaire = models.TextField(blank=True, help_text="Notes d'évaluation spécifiques à cette candidature")
-    date_entretien = models.DateTimeField(null=True, blank=True)
+    
+    
+    date_entretien_rh = models.DateTimeField(null=True, blank=True)
+    date_entretien_technique = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ("candidat", "offre")
+
+    def save(self, *args, **kwargs):
+        if not self.numero_dossier:
+            count = Candidature.objects.filter(offre=self.offre).count() + 1
+            self.numero_dossier = f"OFFRE-{self.offre.id}-{count:04d}"
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.candidat} -> {self.offre.titre} ({self.statut})"
+        return f"[{self.numero_dossier}] {self.candidat} -> {self.offre.titre} ({self.statut})"

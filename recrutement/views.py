@@ -5,6 +5,9 @@ from django.db.models import Q
 from .models import OffreEmploi, Candidat, Candidature
 from .forms import OffreEmploiForm, CandidatForm, CandidatureForm
 
+
+# --- OFFRES D'EMPLOI ---
+
 @login_required
 @require_http_methods(["GET"])
 def liste_offres(request):
@@ -91,6 +94,70 @@ def supprimer_offre(request, id):
     return render(request, "recrutement/supprimer_offre.html", {"offre": offre})
 
 
+# --- CVTHÈQUE / CANDIDATS ---
+
+@login_required
+@require_http_methods(["GET"])
+def liste_candidats(request):
+    candidats = Candidat.objects.filter(utilisateur=request.user)
+    q = request.GET.get('q', '').strip()
+
+    if q:
+        candidats = candidats.filter(
+            Q(nom__icontains=q) |
+            Q(prenom__icontains=q) |
+            Q(email__icontains=q) |
+            Q(competences__icontains=q)
+        )
+
+    return render(request, "recrutement/liste_candidats.html", {
+        "candidats": candidats,
+        "q": q,
+    })
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def ajouter_candidat(request):
+    if request.method == "POST":
+        form = CandidatForm(request.POST, request.FILES)
+        if form.is_valid():
+            candidat = form.save(commit=False)
+            candidat.utilisateur = request.user
+            candidat.save()
+            return redirect("liste_candidats")
+    else:
+        form = CandidatForm()
+
+    return render(request, "recrutement/form_candidat.html", {"form": form, "titre": "Ajouter un candidat"})
+
+
+@login_required
+@require_http_methods(["GET"])
+def detail_candidat(request, id):
+    candidat = get_object_or_404(Candidat, id=id, utilisateur=request.user)
+    candidatures = Candidature.objects.filter(candidat=candidat)
+    return render(request, "recrutement/detail_candidat.html", {
+        "candidat": candidat,
+        "candidatures": candidatures,
+    })
+
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def supprimer_candidat(request, id):
+    candidat = get_object_or_404(Candidat, id=id, utilisateur=request.user)
+
+    if request.method == "POST":
+        candidat.delete()
+        return redirect("liste_candidats")
+
+    return render(request, "recrutement/supprimer_candidat.html", {"candidat": candidat})
+
+
+# --- CANDIDATURES ---
+
 @login_required
 @require_http_methods(["GET", "POST"])
 def ajouter_candidature(request, offre_id):
@@ -99,7 +166,9 @@ def ajouter_candidature(request, offre_id):
     if request.method == "POST":
         form = CandidatForm(request.POST, request.FILES)
         if form.is_valid():
-            candidat = form.save()
+            candidat = form.save(commit=False)
+            candidat.utilisateur = request.user
+            candidat.save()
             Candidature.objects.create(candidat=candidat, offre=offre)
             return redirect("liste_candidatures", offre_id=offre.id)
     else:
@@ -114,7 +183,6 @@ def liste_candidatures(request, offre_id):
     offre = get_object_or_404(OffreEmploi, id=offre_id, utilisateur=request.user)
     candidatures = Candidature.objects.filter(offre=offre)
 
-    # Sanitize filter inputs
     q = request.GET.get('q', '').strip()
     statut = request.GET.get('statut', '').strip()
     note = request.GET.get('note', '').strip()

@@ -14,24 +14,46 @@
             <a class="navbar-brand fw-bold" href="{% url 'liste_offres' %}">
                 <i class="bi bi-briefcase-fill text-primary me-2"></i>RH Platform
             </a>
-            <div class="navbar-nav ms-auto align-items-center">
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
                 {% if user.is_authenticated %}
-                    <span class="nav-link disabled text-light me-3">
-                        <i class="bi bi-building me-1"></i>{{ user.nom_entreprise|default:user.username }}
-                    </span>
-
-                    {% if user.is_staff or user.is_superuser %}
-                        <a class="btn btn-outline-light btn-sm me-2" href="/admin/">
-                            <i class="bi bi-speedometer2 me-1"></i>Administration
-                        </a>
-                    {% endif %}
-
-                    <a class="btn btn-danger btn-sm" href="{% url 'deconnexion' %}">
-                        <i class="bi bi-box-arrow-right me-1"></i>Déconnexion
-                    </a>
-                {% else %}
-                    <a class="btn btn-outline-light btn-sm" href="{% url 'connexion' %}">Connexion</a>
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'liste_offres' %}">
+                                <i class="bi bi-briefcase me-1"></i>Offres d'emploi
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'liste_candidats' %}">
+                                <i class="bi bi-people me-1"></i>CVthèque
+                            </a>
+                        </li>
+                    </ul>
                 {% endif %}
+
+                <div class="navbar-nav ms-auto align-items-lg-center">
+                    {% if user.is_authenticated %}
+                        <span class="nav-link disabled text-light me-lg-3">
+                            <i class="bi bi-building me-1"></i>{{ user.nom_entreprise|default:user.username }}
+                        </span>
+
+                        {% if user.is_staff or user.is_superuser %}
+                            <a class="btn btn-outline-light btn-sm me-lg-2 my-1 my-lg-0" href="/admin/">
+                                <i class="bi bi-speedometer2 me-1"></i>Administration
+                            </a>
+                        {% endif %}
+
+                        <a class="btn btn-danger btn-sm my-1 my-lg-0" href="{% url 'deconnexion' %}">
+                            <i class="bi bi-box-arrow-right me-1"></i>Déconnexion
+                        </a>
+                    {% else %}
+                        <a class="btn btn-outline-light btn-sm" href="{% url 'connexion' %}">Connexion</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </nav>

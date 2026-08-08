@@ -9,24 +9,24 @@ class OffreEmploiForm(forms.ModelForm):
             "titre",
             "description",
             "lieu",
-            "departement",             # NOUVEAU
-            "type_contrat",            # NOUVEAU
-            "mode_travail",            # NOUVEAU
-            "salaire_min",             # NOUVEAU
-            "salaire_max",             # NOUVEAU
-            "niveau_experience_requis",# NOUVEAU
-            "niveau_etudes_requis",    # NOUVEAU
-            "nombre_postes",           # NOUVEAU
-            "avantages",               # NOUVEAU
+            "departement",            
+            "type_contrat",            
+            "mode_travail",            
+            "salaire_min",            
+            "salaire_max",            
+            "niveau_experience_requis",
+            "niveau_etudes_requis",    
+            "nombre_postes",           
+            "avantages",              
             "date_debut",
             "date_fin",
-            "date_limite_candidature", # NOUVEAU
+            "date_limite_candidature", 
             "statut_offre",
         ]
         widgets = {
             "date_debut": forms.DateInput(attrs={"type": "date"}),
             "date_fin": forms.DateInput(attrs={"type": "date"}),
-            "date_limite_candidature": forms.DateInput(attrs={"type": "date"}), # Calendrier
+            "date_limite_candidature": forms.DateInput(attrs={"type": "date"}),
         }
 
 
@@ -38,23 +38,23 @@ class CandidatForm(forms.ModelForm):
             "prenom",
             "email",
             "telephone",
-            "ville",                   # NOUVEAU
+            "ville",                   
             "date_naissance",
             "niveau_scolaire",
             "mobilite",
-            "linkedin_url",            # NOUVEAU
-            "annees_experience",       # NOUVEAU
-            "competences",             # NOUVEAU
-            "source_recrutement",      # NOUVEAU
-            "disponibilite",           # NOUVEAU
-            "pretention_salariale",    # NOUVEAU
-            "lettre_motivation",       # NOUVEAU
+            "linkedin_url",            
+            "annees_experience",       
+            "competences",             
+            "source_recrutement",      
+            "disponibilite",           
+            "pretention_salariale",    
+            "lettre_motivation",       
             "cv",
-            "notes_recruteur",         # NOUVEAU
+            "notes_recruteur",         
         ]
         widgets = {
             "date_naissance": forms.DateInput(attrs={"type": "date"}),
-            "disponibilite": forms.DateInput(attrs={"type": "date"}), # Calendrier
+            "disponibilite": forms.DateInput(attrs={"type": "date"}),
         }
 
 
@@ -63,10 +63,12 @@ class CandidatureForm(forms.ModelForm):
         model = Candidature
         fields = [
             "statut", 
-            "note_evaluation",  # NOUVEAU
-            "commentaire",      # NOUVEAU
-            "date_entretien"    # NOUVEAU
+            "note_evaluation",  
+            "commentaire",      
+            "date_entretien_rh",
+            "date_entretien_technique",
         ]
         widgets = {
-            "date_entretien": forms.DateTimeInput(attrs={"type": "datetime-local"}), 
+            "date_entretien_rh": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "date_entretien_technique": forms.DateTimeInput(attrs={"type": "datetime-local"}),
         }

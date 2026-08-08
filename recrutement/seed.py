@@ -8,6 +8,7 @@ def run():
     Candidature.objects.all().delete()
     Candidat.objects.all().delete()
     OffreEmploi.objects.all().delete()
+
     user, created = Utilisateur.objects.get_or_create(
         username="simac",
         defaults={
@@ -64,6 +65,7 @@ def run():
 
     
     candidat1 = Candidat.objects.create(
+        utilisateur=user,
         nom="Ben Ali",
         prenom="Amira",
         email="amira@example.com",
@@ -83,6 +85,7 @@ def run():
     )
 
     candidat2 = Candidat.objects.create(
+        utilisateur=user,
         nom="Trabelsi",
         prenom="Karim",
         email="karim@example.com",
@@ -108,7 +111,8 @@ def run():
         statut="en_attente",
         note_evaluation=4,
         commentaire="Profil très intéressant pour le poste de technicien.",
-        date_entretien=timezone.make_aware(datetime(2026, 8, 10, 10, 0)),
+        date_entretien_rh=timezone.make_aware(datetime(2026, 8, 10, 10, 0)),
+        date_entretien_technique=timezone.make_aware(datetime(2026, 8, 12, 14, 0)),
     )
 
     Candidature.objects.create(
@@ -117,7 +121,8 @@ def run():
         statut="acceptee",
         note_evaluation=5,
         commentaire="Test technique réussi avec succès (95/100).",
-        date_entretien=timezone.make_aware(datetime(2026, 8, 5, 14, 30)),
+        date_entretien_rh=timezone.make_aware(datetime(2026, 8, 5, 11, 0)),
+        date_entretien_technique=timezone.make_aware(datetime(2026, 8, 7, 14, 30)),
     )
 
     Candidature.objects.create(
@@ -128,4 +133,4 @@ def run():
         commentaire="Manque de compétences en développement logiciel.",
     )
 
-    print("Données de test ATS / Schema.org générées avec succès.")
+    print("Données de test CVthèque et ATS générées avec succès.")

@@ -1,0 +1,106 @@
+{% extends 'recrutement/base.html' %}
+
+{% block title %}{{ candidat.prenom }} {{ candidat.nom }} - Profil Candidat{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">{{ candidat.prenom }} {{ candidat.nom }}</h2>
+        <span class="badge bg-primary fs-6">{{ candidat.get_niveau_scolaire_display|default:"Niveau non renseigné" }}</span>
+    </div>
+    <div>
+        <a href="{% url 'supprimer_candidat' candidat.id %}" class="btn btn-danger">Supprimer</a>
+        <a href="{% url 'liste_candidats' %}" class="btn btn-outline-secondary">Retour CVthèque</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Profile Info Card -->
+    <div class="col-md-5">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-light fw-bold">Informations Personnelles</div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0"><strong>Email:</strong> {{ candidat.email|default:"Non renseigné" }}</li>
+                    <li class="list-group-item px-0"><strong>Téléphone:</strong> {{ candidat.telephone|default:"Non renseigné" }}</li>
+                    <li class="list-group-item px-0"><strong>Ville:</strong> {{ candidat.ville|default:"Non renseignée" }}</li>
+                    <li class="list-group-item px-0"><strong>Années d'expérience:</strong> {{ candidat.annees_experience }} ans</li>
+                    <li class="list-group-item px-0">
+                        <strong>Mobilité:</strong> 
+                        {% if candidat.mobilite %}
+                            <span class="badge bg-success">Oui</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Non</span>
+                        {% endif %}
+                    </li>
+                </ul>
+                
+                {% if candidat.cv %}
+                    <div class="d-grid mt-3">
+                        <a href="{{ candidat.cv.url }}" target="_blank" class="btn btn-danger">
+                            <i class="bi bi-file-earmark-pdf me-2"></i> Télécharger le CV
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills & Notes -->
+    <div class="col-md-7">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-light fw-bold">Compétences & Notes</div>
+            <div class="card-body">
+                <h6 class="fw-bold text-muted">Compétences de clé</h6>
+                <p class="border p-2 rounded bg-light">{{ candidat.competences|default:"Aucune compétence ajoutée." }}</p>
+
+                <h6 class="fw-bold text-muted mt-3">Notes du recruteur</h6>
+                <p class="border p-2 rounded bg-light">{{ candidat.notes_recruteur|default:"Aucune note interne." }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Candidate's Application History -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-dark text-white fw-bold">
+        <i class="bi bi-folder-symlink me-2"></i> Historique des Candidatures Postulées
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>N° Dossier</th>
+                        <th>Offre d'emploi</th>
+                        <th>Date de candidature</th>
+                        <th>Entretien RH</th>
+                        <th>Entretien Technique</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cand in candidatures %}
+                    <tr>
+                        <td class="fw-bold text-primary">{{ cand.numero_dossier }}</td>
+                        <td>{{ cand.offre.titre }}</td>
+                        <td>{{ cand.date_candidature|date:"d/m/Y H:i" }}</td>
+                        <td>{{ cand.date_entretien_rh|date:"d/m/Y H:i"|default:"-" }}</td>
+                        <td>{{ cand.date_entretien_technique|date:"d/m/Y H:i"|default:"-" }}</td>
+                        <td>
+                            <span class="badge {% if cand.statut == 'acceptee' %}bg-success{% elif cand.statut == 'refusee' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                {{ cand.get_statut_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-3 text-muted">Ce candidat n'a pas encore été associé à une offre.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

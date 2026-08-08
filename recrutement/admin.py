@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import OffreEmploi, Candidature, Candidat
 
+
 @admin.register(OffreEmploi)
 class OffreEmploiAdmin(admin.ModelAdmin):
     list_display = ("titre", "utilisateur", "type_contrat", "mode_travail", "statut_offre", "date_publication")
@@ -17,5 +18,12 @@ class CandidatAdmin(admin.ModelAdmin):
 
 @admin.register(Candidature)
 class CandidatureAdmin(admin.ModelAdmin):
-    list_display = ("candidat", "offre", "statut", "note_evaluation", "date_entretien")
+    list_display = (
+        "candidat",
+        "offre",
+        "statut",
+        "note_evaluation",
+        "date_entretien_rh",
+        "date_entretien_technique",
+    )
     list_filter = ("statut", "note_evaluation")
