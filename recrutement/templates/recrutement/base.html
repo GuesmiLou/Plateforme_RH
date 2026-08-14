@@ -47,9 +47,12 @@
                             </a>
                         {% endif %}
 
-                        <a class="btn btn-danger btn-sm my-1 my-lg-0" href="{% url 'deconnexion' %}">
-                            <i class="bi bi-box-arrow-right me-1"></i>Déconnexion
-                        </a>
+                        <form action="{% url 'deconnexion' %}" method="post" class="d-inline my-1 my-lg-0">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="bi bi-box-arrow-right me-1"></i>Déconnexion
+                            </button>
+                        </form>
                     {% else %}
                         <a class="btn btn-outline-light btn-sm" href="{% url 'connexion' %}">Connexion</a>
                     {% endif %}

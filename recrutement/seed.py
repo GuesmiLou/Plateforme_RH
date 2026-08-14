@@ -17,6 +17,8 @@ def run():
             "description_entreprise": "Entreprise industrielle.",
             "secteur_activite": "Industrie",
             "role": Utilisateur.Role.RECRUTEUR,
+            "site_web": "https://www.simac.tn",
+            "adresse_entreprise": "Zone Industrielle, Charguia I, Tunis",
         }
     )
     if created:

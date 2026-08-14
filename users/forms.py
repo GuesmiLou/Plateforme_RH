@@ -13,6 +13,8 @@ class UtilisateurSignUpForm(UserCreationForm):
             "nom_entreprise",
             "description_entreprise",
             "secteur_activite",
+            "site_web",
+            "adresse_entreprise",
             "password1",
             "password2",
         ]

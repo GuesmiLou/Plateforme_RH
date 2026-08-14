@@ -17,7 +17,8 @@ class Utilisateur(AbstractUser):
     nom_entreprise = models.CharField(max_length=255, blank=True)
     description_entreprise = models.TextField(blank=True)
     secteur_activite = models.CharField(max_length=100, blank=True)
-
+    site_web = models.URLField(max_length=255, blank=True)
+    adresse_entreprise = models.CharField(max_length=255, blank=True)
     def save(self, *args, **kwargs):
         if self.is_superuser:
             self.role = self.Role.ADMIN
