@@ -1,6 +1,6 @@
+from datetime import date
 from django import forms
 from .models import OffreEmploi, Candidat, Candidature
-
 
 class OffreEmploiForm(forms.ModelForm):
     class Meta:
@@ -53,9 +53,18 @@ class CandidatForm(forms.ModelForm):
             "notes_recruteur",         
         ]
         widgets = {
-            "date_naissance": forms.DateInput(attrs={"type": "date"}),
+            "date_naissance": forms.DateInput(attrs={
+                "type": "date", 
+                "max": date.today().isoformat()
+            }),
             "disponibilite": forms.DateInput(attrs={"type": "date"}),
         }
+
+    def clean_date_naissance(self):
+        date_naissance = self.cleaned_data.get("date_naissance")
+        if date_naissance and date_naissance > date.today():
+            raise forms.ValidationError("La date de naissance ne peut pas être dans le futur.")
+        return date_naissance
 
 
 class CandidatureForm(forms.ModelForm):

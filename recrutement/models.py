@@ -1,8 +1,21 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from users.models import Utilisateur
+from django.core.validators import RegexValidator
+from datetime import date
+from django.core.exceptions import ValidationError
 
-
+phone_regex = RegexValidator(
+    regex=r'^\+?[0-9\s\-()]{7,20}$',
+    message="Le numéro de téléphone doit contenir uniquement des chiffres, espaces, ou les symboles +, -, ()."
+)
+def validate_date_naissance(value):
+    if value and value > date.today():
+        raise ValidationError("La date de naissance ne peut pas être située dans le futur.")
+    
+def validate_date_naissance(value):
+    if value and value > date.today():
+        raise ValidationError("La date de naissance ne peut pas être située dans le futur.")
 class OffreEmploi(models.Model):
     class TypeContrat(models.TextChoices):
         CDI = "CDI", "CDI"
@@ -73,8 +86,16 @@ class Candidat(models.Model):
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
     email = models.EmailField(blank=True)
-    telephone = models.CharField(max_length=20, blank=True)
-    date_naissance = models.DateField(null=True, blank=True)
+    telephone = models.CharField(
+        validators=[phone_regex], 
+        max_length=20, 
+        blank=True
+    )
+    date_naissance = models.DateField(
+        validators=[validate_date_naissance],
+        null=True,
+        blank=True
+    )
     niveau_scolaire = models.CharField(max_length=20, choices=NiveauScolaire.choices, blank=True)
     mobilite = models.BooleanField(default=False, help_text="Le candidat est-il mobile géographiquement ?")
     cv = models.FileField(upload_to="cvs/", blank=True, null=True)
