@@ -2,6 +2,7 @@ from datetime import date
 from django import forms
 from .models import OffreEmploi, Candidat, Candidature
 
+
 class OffreEmploiForm(forms.ModelForm):
     class Meta:
         model = OffreEmploi
@@ -9,26 +10,40 @@ class OffreEmploiForm(forms.ModelForm):
             "titre",
             "description",
             "lieu",
-            "departement",            
-            "type_contrat",            
-            "mode_travail",            
-            "salaire_min",            
-            "salaire_max",            
+            "departement",
+            "type_contrat",
+            "mode_travail",
+            "niveau_hierarchique",
+            "horaires_travail",
+            "salaire_min",
+            "salaire_max",
             "niveau_experience_requis",
-            "niveau_etudes_requis",    
-            "nombre_postes",           
-            "avantages",              
+            "niveau_etudes_requis",
+            "langues_requises",
+            "competences_cles",
+            "outils_technologies",
+            "nombre_postes",
+            "avantages",
             "date_debut",
             "date_fin",
-            "date_limite_candidature", 
+            "date_limite_candidature",
             "statut_offre",
         ]
         widgets = {
             "date_debut": forms.DateInput(attrs={"type": "date"}),
             "date_fin": forms.DateInput(attrs={"type": "date"}),
             "date_limite_candidature": forms.DateInput(attrs={"type": "date"}),
+            "competences_cles": forms.Textarea(attrs={
+                "rows": 3,
+                "placeholder": "Ex: Python (Indispensable), Django (Important), Docker (Souhaitable)"
+            }),
+            "langues_requises": forms.TextInput(attrs={
+                "placeholder": "Ex: Français (Courant), Anglais (B2/Technique)"
+            }),
+            "outils_technologies": forms.TextInput(attrs={
+                "placeholder": "Ex: Git, PostgreSQL, Docker, Linux"
+            }),
         }
-
 
 class CandidatForm(forms.ModelForm):
     class Meta:

@@ -3,87 +3,212 @@
 {% block content %}
 <div class="mb-4">
     <a href="{% url 'liste_offres' %}" class="btn btn-outline-secondary btn-sm mb-3">
-        <i class="bi bi-arrow-left me-1"></i>Retour à la liste
+        <i class="bi bi-arrow-left me-1"></i>Retour aux offres
     </a>
-    
-    <div class="d-flex justify-content-between align-items-start">
-        <div>
-            <h2 class="fw-bold mb-1">{{ offre.titre }}</h2>
-            <p class="text-muted">
-                <i class="bi bi-geo-alt me-1"></i>{{ offre.lieu|default:"Non renseigné" }}
-                {% if offre.departement %} • <i class="bi bi-building me-1"></i>{{ offre.departement }}{% endif %}
-            </p>
+
+    <!-- Header Card -->
+    <div class="card shadow-sm border-0 bg-white p-4 rounded-3">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill">
+                        <i class="bi bi-briefcase me-1"></i>{{ offre.get_type_contrat_display }}
+                    </span>
+                    <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-1 rounded-pill">
+                        <i class="bi bi-laptop me-1"></i>{{ offre.get_mode_travail_display }}
+                    </span>
+                    <span class="badge bg-secondary-subtle text-dark border px-3 py-1 rounded-pill">
+                        <i class="bi bi-diagram-3 me-1"></i>{{ offre.get_niveau_hierarchique_display }}
+                    </span>
+                </div>
+                <h2 class="fw-bold mb-2 text-dark">{{ offre.titre }}</h2>
+                <p class="text-secondary mb-0 fs-6">
+                    <i class="bi bi-geo-alt text-danger me-1"></i>{{ offre.lieu|default:"Non renseigné" }}
+                    {% if offre.departement %} • <i class="bi bi-building text-primary me-1"></i>{{ offre.departement }}{% endif %}
+                    • <i class="bi bi-people text-success me-1"></i>{{ offre.nombre_postes }} poste{% if offre.nombre_postes > 1 %}s{% endif %} disponible{% if offre.nombre_postes > 1 %}s{% endif %}
+                </p>
+            </div>
+            <div class="text-end">
+                <span class="badge {% if offre.statut_offre == 'ouverte' %}bg-success{% else %}bg-secondary{% endif %} fs-6 px-3 py-2 rounded-pill">
+                    <i class="bi bi-circle-fill me-1 fs-6"></i>{{ offre.get_statut_offre_display }}
+                </span>
+                <div class="text-muted small mt-2">Publiée le {{ offre.date_publication|date:"d/m/Y" }}</div>
+            </div>
         </div>
-        <span class="badge {% if offre.statut_offre == 'ouverte' %}bg-success{% else %}bg-secondary{% endif %} fs-6">
-            {{ offre.get_statut_offre_display }}
-        </span>
     </div>
 </div>
 
 <div class="row g-4 mb-4">
-    <!-- Main Content -->
+    <!-- Left Column: Content -->
     <div class="col-lg-8">
+        
+        <!-- Description -->
         <div class="card shadow-sm border-0 mb-4">
-            <div class="card-body">
-                <h5 class="fw-bold text-dark border-bottom pb-2">Description du poste</h5>
-                <p class="card-text text-secondary style-description">{{ offre.description|linebreaks }}</p>
-
-                {% if offre.avantages %}
-                    <h5 class="fw-bold text-dark border-bottom pb-2 mt-4">Avantages</h5>
-                    <p class="card-text text-secondary">{{ offre.avantages|linebreaks }}</p>
-                {% endif %}
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                    <i class="bi bi-file-text text-primary me-2"></i>Description du poste
+                </h5>
+                <p class="card-text text-secondary lh-lg mb-0">{{ offre.description|linebreaks }}</p>
             </div>
         </div>
+
+        <!-- Compétences & Priorités -->
+        {% if offre.competences_cles %}
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                    <i class="bi bi-stars text-warning me-2"></i>Compétences attendues & Priorités
+                </h5>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for comp in offre.list_competences %}
+                        {% if 'Indispensable' in comp %}
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 fs-6 rounded-3">
+                                <i class="bi bi-exclamation-octagon-fill me-1"></i>{{ comp }}
+                            </span>
+                        {% elif 'Important' in comp %}
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fs-6 rounded-3">
+                                <i class="bi bi-check-circle-fill me-1"></i>{{ comp }}
+                            </span>
+                        {% else %}
+                            <span class="badge bg-light text-secondary border px-3 py-2 fs-6 rounded-3">
+                                <i class="bi bi-plus-circle me-1"></i>{{ comp }}
+                            </span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Outils & Environnement Technique -->
+        {% if offre.outils_technologies %}
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                    <i class="bi bi-tools text-secondary me-2"></i>Outils & Technologies
+                </h5>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for outil in offre.list_outils %}
+                        <span class="badge bg-dark text-white px-3 py-2 fs-6 rounded-pill">
+                            <i class="bi bi-cpu me-1"></i>{{ outil }}
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Avantages -->
+        {% if offre.avantages %}
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                    <i class="bi bi-gift text-success me-2"></i>Avantages & Conditions de travail
+                </h5>
+                <p class="card-text text-secondary mb-0">{{ offre.avantages|linebreaks }}</p>
+            </div>
+        </div>
+        {% endif %}
+
     </div>
 
-    <!-- Metadata Sidebar -->
+    <!-- Right Column: Sidebar Metadata -->
     <div class="col-lg-4">
+        
+        <!-- Key Requirements -->
         <div class="card shadow-sm border-0 mb-4">
-            <div class="card-body">
-                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">Détails de l'offre</h5>
-                
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                    <i class="bi bi-card-checklist text-primary me-2"></i>Exigences du poste
+                </h5>
+
                 <ul class="list-unstyled mb-0">
-                    <li class="mb-2">
-                        <strong>Type de contrat :</strong> {{ offre.get_type_contrat_display|default:"Non spécifié" }}
+                    <li class="mb-3 d-flex align-items-start">
+                        <i class="bi bi-award fs-5 text-primary me-3"></i>
+                        <div>
+                            <small class="text-muted d-block">Expérience requise</small>
+                            <strong class="text-dark">{{ offre.niveau_experience_requis|default:"Tous niveaux" }}</strong>
+                        </div>
                     </li>
-                    <li class="mb-2">
-                        <strong>Mode de travail :</strong> {{ offre.get_mode_travail_display|default:"Non spécifié" }}
+                    <li class="mb-3 d-flex align-items-start">
+                        <i class="bi bi-mortarboard fs-5 text-primary me-3"></i>
+                        <div>
+                            <small class="text-muted d-block">Niveau d'études</small>
+                            <strong class="text-dark">{{ offre.niveau_etudes_requis|default:"Non spécifié" }}</strong>
+                        </div>
                     </li>
+                    <li class="mb-3 d-flex align-items-start">
+                        <i class="bi bi-translate fs-5 text-primary me-3"></i>
+                        <div>
+                            <small class="text-muted d-block">Langues requises</small>
+                            <strong class="text-dark">{{ offre.langues_requises|default:"Non spécifié" }}</strong>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start">
+                        <i class="bi bi-clock-history fs-5 text-primary me-3"></i>
+                        <div>
+                            <small class="text-muted d-block">Horaires</small>
+                            <strong class="text-dark">{{ offre.get_horaires_travail_display }}</strong>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Compensation & Dates -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                    <i class="bi bi-cash-stack text-success me-2"></i>Rémunération & Dates
+                </h5>
+
+                <ul class="list-unstyled mb-0">
                     {% if offre.salaire_min or offre.salaire_max %}
-                        <li class="mb-2">
-                            <strong>Rémunération :</strong> {{ offre.salaire_min|default:"-" }} à {{ offre.salaire_max|default:"-" }} TND
+                        <li class="mb-3 d-flex align-items-start">
+                            <i class="bi bi-wallet2 fs-5 text-success me-3"></i>
+                            <div>
+                                <small class="text-muted d-block">Fourchette salariale</small>
+                                <strong class="text-dark fs-6">{{ offre.salaire_min|default:"-" }} - {{ offre.salaire_max|default:"-" }} TND / mois</strong>
+                            </div>
                         </li>
                     {% endif %}
-                    {% if offre.date_debut or offre.date_fin %}
-                        <li class="mb-2">
-                            <strong>Période :</strong> 
-                            Du {{ offre.date_debut|date:"d/m/Y"|default:"immediat" }} 
-                            au {{ offre.date_fin|date:"d/m/Y"|default:"indéterminée" }}
-                        </li>
-                    {% endif %}
+                    
+                    <li class="mb-3 d-flex align-items-start">
+                        <i class="bi bi-calendar-event fs-5 text-info me-3"></i>
+                        <div>
+                            <small class="text-muted d-block">Début de mission</small>
+                            <strong class="text-dark">{{ offre.date_debut|date:"d/m/Y"|default:"Immédiat" }}</strong>
+                        </div>
+                    </li>
+
                     {% if offre.date_limite_candidature %}
-                        <li class="mb-2 text-danger">
-                            <strong>Date limite :</strong> {{ offre.date_limite_candidature|date:"d/m/Y" }}
+                        <li class="d-flex align-items-start">
+                            <i class="bi bi-hourglass-split fs-5 text-danger me-3"></i>
+                            <div>
+                                <small class="text-muted d-block">Date limite de candidature</small>
+                                <strong class="text-danger fw-bold">{{ offre.date_limite_candidature|date:"d/m/Y" }}</strong>
+                            </div>
                         </li>
                     {% endif %}
                 </ul>
             </div>
         </div>
 
-        <!-- Action Card -->
+        <!-- Actions -->
         <div class="card shadow-sm border-0">
-            <div class="card-body d-grid gap-2">
-                <a href="{% url 'liste_candidatures' offre.id %}" class="btn btn-primary">
-                    <i class="bi bi-people me-1"></i>Voir les candidatures
+            <div class="card-body p-3 d-grid gap-2">
+                <a href="{% url 'liste_candidatures' offre.id %}" class="btn btn-primary py-2 fw-bold">
+                    <i class="bi bi-people-fill me-1"></i>Voir les candidatures
                 </a>
-                <a href="{% url 'modifier_offre' offre.id %}" class="btn btn-outline-warning text-dark">
+                <a href="{% url 'modifier_offre' offre.id %}" class="btn btn-outline-warning text-dark py-2">
                     <i class="bi bi-pencil me-1"></i>Modifier l'offre
                 </a>
-                <a href="{% url 'supprimer_offre' offre.id %}" class="btn btn-outline-danger">
+                <a href="{% url 'supprimer_offre' offre.id %}" class="btn btn-outline-danger py-2">
                     <i class="bi bi-trash me-1"></i>Supprimer l'offre
                 </a>
             </div>
         </div>
+
     </div>
 </div>
 {% endblock %}
