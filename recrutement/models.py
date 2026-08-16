@@ -4,6 +4,7 @@ from users.models import Utilisateur
 from django.core.validators import RegexValidator
 from datetime import date
 from django.core.exceptions import ValidationError
+import re
 
 phone_regex = RegexValidator(
     regex=r'^\+?[0-9\s\-()]{7,20}$',
@@ -184,29 +185,107 @@ class Candidature(models.Model):
     date_entretien_rh = models.DateTimeField(null=True, blank=True)
     date_entretien_technique = models.DateTimeField(null=True, blank=True)
     def score_compatibilite(self):
-        score = 0
-        max_score = 100
+        """Returns total score out of 100."""
+        return self.score_detail()["total_score"]
 
+    def score_detail(self):
+        """Calculates detailed matching scores across 4 key criteria."""
+        scores = {
+            "competences": 0,  # Max 50 pts
+            "localisation": 0, # Max 20 pts
+            "salaire": 0,      # Max 15 pts
+            "etudes": 0,       # Max 15 pts
+            "total_score": 0   # Max 100 pts
+        }
+
+        candidat_skills = set(
+            s.strip().lower() for s in self.candidat.competences.split(",") if s.strip()
+        )
         
-        if self.offre.description and self.candidat.competences:
-            competences_candidat = set(c.strip().lower() for c in self.candidat.competences.split(","))
-            description_offre = self.offre.description.lower()
+        if candidat_skills:
+            job_requirements = []
+            for comp_str in self.offre.list_competences:
+                weight = 1.0  
+                if "indispensable" in comp_str.lower():
+                    weight = 2.0
+                elif "important" in comp_str.lower():
+                    weight = 1.5
+                
+                
+                clean_name = re.sub(r"\(.*?\)", "", comp_str).strip().lower()
+                if clean_name:
+                    job_requirements.append((clean_name, weight))
+
             
-            matches = [comp for comp in competences_candidat if comp in description_offre]
-            if competences_candidat:
-                score += int((len(matches) / len(competences_candidat)) * 60)
+            for tool_str in self.offre.list_outils:
+                clean_tool = tool_str.strip().lower()
+                if clean_tool:
+                    job_requirements.append((clean_tool, 1.0))
+
+            if job_requirements:
+                total_weight = sum(weight for _, weight in job_requirements)
+                matched_weight = sum(
+                    weight for skill_name, weight in job_requirements
+                    if any(skill_name in c_skill or c_skill in skill_name for c_skill in candidat_skills)
+                )
+                scores["competences"] = round((matched_weight / total_weight) * 50)
 
         
-        if self.candidat.ville and self.offre.lieu:
-            if self.candidat.ville.lower() == self.offre.lieu.lower() or self.candidat.mobilite:
-                score += 20
+        if self.offre.mode_travail == OffreEmploi.ModeTravail.TELECOMMUTE:
+            scores["localisation"] = 20
+        elif self.candidat.mobilite:
+            scores["localisation"] = 20
+        elif self.candidat.ville and self.offre.lieu:
+            if self.candidat.ville.strip().lower() == self.offre.lieu.strip().lower():
+                scores["localisation"] = 20
+            else:
+                scores["localisation"] = 5  
+        else:
+            scores["localisation"] = 10  
 
         
-        if self.candidat.pretention_salariale and self.offre.salaire_max:
-            if self.candidat.pretention_salariale <= self.offre.salaire_max:
-                score += 20
+        if not self.candidat.pretention_salariale or not self.offre.salaire_max:
+            scores["salaire"] = 15  
+        else:
+            candidate_req = float(self.candidat.pretention_salariale)
+            job_max = float(self.offre.salaire_max)
+            
+            if candidate_req <= job_max:
+                scores["salaire"] = 15
+            elif candidate_req <= job_max * 1.15: 
+                scores["salaire"] = 8
+            else:
+                scores["salaire"] = 0
 
-        return min(score, max_score)
+        
+        degree_levels = {
+            "bac": 1,
+            "licence": 2,
+            "master": 3,
+            "ingenieur": 3,
+            "doctorat": 4,
+        }
+        cand_level = degree_levels.get(self.candidat.niveau_scolaire, 0)
+        
+        
+        req_text = (self.offre.niveau_etudes_requis or "").lower()
+        req_level = 0
+        for level_key, level_val in degree_levels.items():
+            if level_key in req_text:
+                req_level = max(req_level, level_val)
+
+        if cand_level >= req_level or req_level == 0:
+            scores["etudes"] = 15
+        elif cand_level == req_level - 1:
+            scores["etudes"] = 7
+        else:
+            scores["etudes"] = 0
+
+        scores["total_score"] = min(
+            sum([scores["competences"], scores["localisation"], scores["salaire"], scores["etudes"]]), 
+            100
+        )
+        return scores
 
     class Meta:
         unique_together = ("candidat", "offre")

@@ -78,7 +78,7 @@ class CandidatForm(forms.ModelForm):
     def clean_date_naissance(self):
         date_naissance = self.cleaned_data.get("date_naissance")
         if date_naissance and date_naissance > date.today():
-            raise forms.ValidationError("La date de naissance ne peut pas être dans le futur.")
+            raise forms.ValidationError("La date de naissance ne peut pas être dans le future.")
         return date_naissance
 
 
