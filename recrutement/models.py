@@ -12,11 +12,11 @@ phone_regex = RegexValidator(
 )
 def validate_date_naissance(value):
     if value and value > date.today():
-        raise ValidationError("La date de naissance ne peut pas être située dans le futur.")
+        raise ValidationError("La date de naissance ne peut pas être située dans le future.")
     
 def validate_date_naissance(value):
     if value and value > date.today():
-        raise ValidationError("La date de naissance ne peut pas être située dans le futur.")
+        raise ValidationError("La date de naissance ne peut pas être située dans le future.")
 
 class OffreEmploi(models.Model):
     class TypeContrat(models.TextChoices):
@@ -125,7 +125,7 @@ class Candidat(models.Model):
     )
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
-    email = models.EmailField(blank=True)
+    email = models.EmailField(blank=True, unique=True)
     telephone = models.CharField(
         validators=[phone_regex], 
         max_length=20, 
@@ -189,7 +189,6 @@ class Candidature(models.Model):
         return self.score_detail()["total_score"]
 
     def score_detail(self):
-        """Calculates detailed matching scores across 4 key criteria."""
         scores = {
             "competences": 0,  # Max 50 pts
             "localisation": 0, # Max 20 pts

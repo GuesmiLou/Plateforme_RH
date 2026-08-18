@@ -15,7 +15,7 @@
 <div class="card shadow-sm border-0 mb-4">
     <div class="card-body bg-white rounded">
         <form method="get" class="row g-2">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <input type="text" name="q" class="form-control" placeholder="Rechercher par titre, lieu, département..." value="{{ q }}">
             </div>
             <div class="col-md-2">
@@ -25,7 +25,7 @@
                     <option value="fermee" {% if statut == 'fermee' %}selected{% endif %}>Fermée</option>
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <select name="type_contrat" class="form-select">
                     <option value="">Tous les contrats</option>
                     {% for val, label in type_contrat_choices %}
@@ -33,11 +33,19 @@
                     {% endfor %}
                 </select>
             </div>
+            <div class="col-md-2">
+                <select name="mode_travail" class="form-select">
+                    <option value="">Tous les modes</option>
+                    {% for val, label in mode_travail_choices %}
+                        <option value="{{ val }}" {% if mode_travail == val %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
             <div class="col-md-3 d-flex gap-2">
                 <button type="submit" class="btn btn-primary w-100">
                     <i class="bi bi-search me-1"></i>Filtrer
                 </button>
-                {% if q or statut or type_contrat %}
+                {% if q or statut or type_contrat or mode_travail %}
                     <a href="{% url 'liste_offres' %}" class="btn btn-outline-secondary">
                         <i class="bi bi-x-circle"></i>
                     </a>

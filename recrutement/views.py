@@ -6,7 +6,7 @@ from .models import OffreEmploi, Candidat, Candidature
 from .forms import OffreEmploiForm, CandidatForm, CandidatureForm
 
 
-# --- OFFRES D'EMPLOI ---
+#OFFRES D'EMPLOI
 
 @login_required
 @require_http_methods(["GET"])
@@ -94,7 +94,7 @@ def supprimer_offre(request, id):
     return render(request, "recrutement/supprimer_offre.html", {"offre": offre})
 
 
-# --- CVTHÈQUE / CANDIDATS ---
+#CVTHÈQUE / CANDIDATS
 
 @login_required
 @require_http_methods(["GET"])
@@ -222,3 +222,24 @@ def modifier_candidature(request, id):
         form = CandidatureForm(instance=candidature)
 
     return render(request, "recrutement/modifier_candidature.html", {"form": form, "candidature": candidature})
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def assigner_candidat_existant(request, offre_id):
+    offre = get_object_or_404(OffreEmploi, id=offre_id, utilisateur=request.user)
+    candidats_disponibles = Candidat.objects.filter(
+        utilisateur=request.user
+    ).exclude(candidature__offre=offre)
+
+    if request.method == "POST":
+        candidat_id = request.POST.get("candidat_id")
+        if candidat_id:
+            candidat = get_object_or_404(Candidat, id=candidat_id, utilisateur=request.user)
+            Candidature.objects.create(candidat=candidat, offre=offre)
+            return redirect("liste_candidatures", offre_id=offre.id)
+
+    return render(
+        request, 
+        "recrutement/assigner_candidat.html", 
+        {"offre": offre, "candidats": candidats_disponibles}
+    )

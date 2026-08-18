@@ -20,4 +20,5 @@ urlpatterns = [
     path("offres/<int:offre_id>/candidatures/", views.liste_candidatures, name="liste_candidatures"),
     path("offres/<int:offre_id>/candidatures/nouvelle/", views.ajouter_candidature, name="ajouter_candidature"),
     path("candidatures/<int:id>/modifier/", views.modifier_candidature, name="modifier_candidature"),
+    path('offres/<int:offre_id>/assigner-candidat/', views.assigner_candidat_existant, name='assigner_candidat_existant'),
 ]

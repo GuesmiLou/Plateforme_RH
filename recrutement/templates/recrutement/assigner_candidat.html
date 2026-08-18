@@ -1,0 +1,40 @@
+{% extends "recrutement/base.html" %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 600px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 border-0">
+            <h4 class="fw-bold mb-0">Ajouter depuis la CVthèque</h4>
+            <p class="text-muted small mb-0">Offre : <strong>{{ offre.titre }}</strong></p>
+        </div>
+        <div class="card-body">
+            {% if candidats %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Sélectionner un candidat</label>
+                    <select name="candidat_id" class="form-select" required>
+                        <option value="" selected disabled>-- Choisir dans votre CVthèque --</option>
+                        {% for c in candidats %}
+                            <option value="{{ c.id }}">{{ c.prenom }} {{ c.nom }} ({% if c.email %}{{ c.email }}{% else %}Sans email{% endif %})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{% url 'liste_candidatures' offre.id %}" class="btn btn-outline-secondary">Annuler</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-person-plus me-1"></i>Associer à l'offre
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <div class="text-center py-4">
+                <i class="bi bi-info-circle display-5 text-muted mb-3 d-block"></i>
+                <p class="text-muted mb-3">Tous les candidats de votre CVthèque sont déjà associés à cette offre ou votre CVthèque est vide.</p>
+                <a href="{% url 'liste_candidatures' offre.id %}" class="btn btn-outline-secondary btn-sm">Retour</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
